@@ -1,0 +1,15 @@
+---
+- name: Install et config Apache2
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Mettre à jour la liste des paquets
+      apt:
+        update_cache: yes
+
+    - name: Installer Apache2
+      apt:
+        name: apache2
+        state: present
