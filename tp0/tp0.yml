@@ -1,0 +1,22 @@
+---
+- name: Installer vim et vérifier /etc/passwd (Ubuntu)
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Mettre à jour la liste des paquets
+      apt:
+        update_cache: yes
+
+    - name: Installer vim sur Ubuntu
+      apt:
+        name: vim
+        state: present
+
+    - name: Vérifier que /etc/passwd existe
+      stat:
+        path: /etc/passwd
+      register: passwd_stat
+
+
