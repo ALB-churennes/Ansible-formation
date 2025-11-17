@@ -21,11 +21,6 @@
       ansible.builtin.package_facts:
         manager: auto
 
-    - name: Check whether a package called foobar is installed
-      ansible.builtin.debug:
-        msg: "{{ ansible_facts.packages['apache2'] | length }} versions of foobar are installed!"
-      when: "'apache2' in ansible_facts.packages"
-
     - name: Modifier index.html 
       copy:
         dest: /var/www/html/index.html
@@ -43,4 +38,5 @@
         name: apache2
         state: started
         enabled: yes
+      when: "'apache2' in ansible_facts.packages"
 
