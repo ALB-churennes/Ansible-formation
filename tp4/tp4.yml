@@ -3,7 +3,7 @@
   gather_facts: yes
 
   vars:
-    docker_user: 
+    docker_users: 
       - alb
 
   roles:
