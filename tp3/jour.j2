@@ -1,0 +1,9 @@
+{% if jour_pair and apres_midi %}
+pair et egal ou plus tard que midi
+{% elif jour_pair and not apres_midi %}
+pair et avant midi
+{% elif not jour_pair and apres_midi %}
+impair et egal ou plus tard que midi
+{% else %}
+impair et avant midi
+{% endif %}

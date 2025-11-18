@@ -1,7 +1,6 @@
 ---
 - name: Install et config Apache2
   hosts: all
-  become: yes
 
   tasks:
 
@@ -62,3 +61,24 @@
         state: started
         enabled: yes
       when: "'nginx' in ansible_facts.packages"
+    
+    - name: recherche de la date
+      ansible.builtin.debug:
+        var: ansible_date_time
+
+    - name: converison du jour en entier
+      ansible.builtin.set_fact:
+        jour_pair: "{{ (ansible_date_time.day | int) % 2 == 0 }}"
+
+    - name: recup heure
+      ansible.builtin.set_fact:
+        apres_midi: "{{ (ansible_date_time.hour | int) >= 12 }}"
+
+    - name: jour pair ou impair avant/apres midi
+      ansible.builtin.template:
+        src: jour.j2
+        dest: /etc/jour
+        mode: '0644'
+
+    - name: affiche contenu /etc/jour
+      ansible.builtin.command: cat /etc/jour
