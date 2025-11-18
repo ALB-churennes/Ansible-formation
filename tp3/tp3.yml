@@ -66,12 +66,9 @@
       ansible.builtin.debug:
         var: ansible_date_time
 
-    - name: converison du jour en entier
+    - name: converison du jour et heure en entier
       ansible.builtin.set_fact:
         jour_pair: "{{ (ansible_date_time.day | int) % 2 == 0 }}"
-
-    - name: recup heure
-      ansible.builtin.set_fact:
         apres_midi: "{{ (ansible_date_time.hour | int) >= 12 }}"
 
     - name: jour pair ou impair avant/apres midi
@@ -80,5 +77,10 @@
         dest: /etc/jour
         mode: '0644'
 
-    - name: affiche contenu /etc/jour
+    - name: recup contenu /etc/jour
       ansible.builtin.command: cat /etc/jour
+      register: contenu
+
+    - name: affiche contenu
+      ansible.builtin.debug:
+        var: contenu
