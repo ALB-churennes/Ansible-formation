@@ -1,0 +1,64 @@
+---
+- name: Install et config Apache2
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Installer Apache2 et MySQl-Server
+      apt:
+        update_cache: yes
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apache2
+        - mysql-server
+      when: ansible_hostname in ["ansible-1", "ansible-2"]
+
+    - name: Install git - nginx et cosway
+      apt:
+        update_cache: yes
+        name: "{{ item }}"
+        state: present
+      loop:
+        - git
+        - nginx
+        - cowsay
+      when: ansible_hostname == "ansible-3"
+
+    - name: Install ufw sur platform ubuntu
+      apt:
+        update_cache: yes
+        name: ufw
+        state: present
+      when: ansible_facts.distribution == "Ubuntu"
+
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Modifier index.html 
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <html>
+          <head><title>Apache2</title></head>
+          <body>
+            <h1>Bonjour depuis Ansible sur {{ ansible_hostname }} </h1>
+          </body>
+          </html>
+      when: "'apache2' in ansible_facts.packages or 'nginx' in ansible_facts.packages"
+      
+    - name: Verifie Apache2 est demarre et actif au démarrage
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: "'apache2' in ansible_facts.packages"
+
+    - name: Verifie NGINX est demarre et actif au démarrage
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      when: "'nginx' in ansible_facts.packages"
