@@ -79,8 +79,8 @@
 
     - name: recup contenu /etc/jour
       ansible.builtin.command: cat /etc/jour
-      register: contenu
+      register: contenu_jour
 
     - name: affiche contenu
       ansible.builtin.debug:
-        var: contenu
+        msg: "Contenu du fichier /etc/jour {{ contenu_jour.stdout }} - commande lancee le {{ contenu_jour.start }}"
