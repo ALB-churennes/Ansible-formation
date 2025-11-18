@@ -2,9 +2,5 @@
   hosts: all
   gather_facts: yes
 
-  vars:
-    docker_users: 
-      - alb
-
   roles:
     - geerlingguy.docker

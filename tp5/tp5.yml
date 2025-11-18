@@ -1,17 +1,19 @@
+
+- name: Import playbook de TP4
+  ansible.builtin.import_playbook: tp4.yml
+
+- name: Import playbook de TP3
+  ansible.builtin.import_playbook: ../tp3/tp3.yml
+
 - name: TP5
   hosts: all
-  gather_facts: yes
 
   tasks:
-    - name: Inclusion variables
-      ansible.builtin.include_vars:
-        dir: vars
-        name: vars.yml
+   - name: recherche de la date
+     ansible.builtin.debug:
+       var: ansible_date_time
 
-    - name: Import playbook de TP4
-      ansible.builtin.import_playbook: tp4.yml
-
-    - name: Import playbook de TP3
-      ansible.builtin.import_playbook: ../tp3/tp3.yml
-
-
+   - name: Ajout de la date dans le fichier /etc/last_changed
+     ansible.builtin.copy:
+       dest: /etc/last_changed
+       content: "ce fichier a ete cree le {{ ansible_date_time.date }} - {{ ansible_date_time.time }} \n"
