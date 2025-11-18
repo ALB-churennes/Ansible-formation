@@ -12,6 +12,6 @@
       ansible.builtin.import_playbook: tp4.yml
 
     - name: Import playbook de TP3
-      ansible.builtin.import_playbook: /root/ansible-formation/tp3/tp3.yml
+      ansible.builtin.import_playbook: ../tp3/tp3.yml
 
 
