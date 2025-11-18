@@ -83,4 +83,4 @@
 
     - name: affiche contenu
       ansible.builtin.debug:
-        msg: "Contenu du fichier /etc/jour {{ contenu_jour.stdout }} - commande lancee le {{ contenu_jour.start }}"
+        msg: "Contenu du fichier /etc/jour: {{ contenu_jour.stdout }} - commande lancee le {{ contenu_jour.start }}"
