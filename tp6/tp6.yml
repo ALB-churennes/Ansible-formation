@@ -1,0 +1,26 @@
+---
+- name: Installation apache2 et prerequis wordpress
+  hosts: web
+
+  roles:
+    - geerlingguy.apache
+    - geerlingguy.php
+    - geerlingguy.apache-php-fpm
+
+- name: Installation mysql-server
+  hosts: db
+
+  vars:
+    mysql_root_password: alb
+    mysql_databases:
+      - name: alb-db
+        encoding: latin1
+        collation: latin1_general_ci
+    mysql_users:
+      - name: alb-user
+        host: "%"
+        password: alb-user
+        priv: "alb-db.*:ALL" 
+
+  roles:
+    - geerlingguy.mysql
