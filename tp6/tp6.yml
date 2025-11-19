@@ -2,25 +2,32 @@
 - name: Installation apache2 et prerequis wordpress
   hosts: web
 
+  vars_files:
+    - vars/tp6_vars.yml
+
   roles:
     - geerlingguy.apache
     - geerlingguy.php
     - geerlingguy.apache-php-fpm
 
+  tasks:
+    - name: Telechargement wordpress et unzip untar
+      ansible.builtin.unarchive:
+        src: https://fr.wordpress.org/wordpress-6.8.3-fr_FR.tar.gz
+        dest: /var/www/
+        remote_src: true
+
+    - name: Deploiement fichier conf wordpress
+      ansible.builtin.template:
+        src: templates/wp-config.j2
+        dest: /var/www/wordpress/wp-config.php
+        mode: "0644"
+
 - name: Installation mysql-server
   hosts: db
 
-  vars:
-    mysql_root_password: alb
-    mysql_databases:
-      - name: alb-db
-        encoding: latin1
-        collation: latin1_general_ci
-    mysql_users:
-      - name: alb-user
-        host: "%"
-        password: alb-user
-        priv: "alb-db.*:ALL" 
+  vars_files:
+    - vars/tp6_vars.yml
 
   roles:
     - geerlingguy.mysql
