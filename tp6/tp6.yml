@@ -17,6 +17,10 @@
         dest: /var/www/
         remote_src: true
 
+#    - name: Debug wp-config
+#      ansible.builtin.debug:
+#        msg: "contenu de mysql.user.name {{ mysql_users }} "
+
     - name: Deploiement fichier conf wordpress
       ansible.builtin.template:
         src: templates/wp-config.j2

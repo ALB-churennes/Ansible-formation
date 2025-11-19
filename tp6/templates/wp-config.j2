@@ -21,19 +21,18 @@
 // ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
 /** define( 'DB_NAME', 'alb-db' ); */
-define( 'DB_NAME', {{ mysql_databases.name }} );
+define( 'DB_NAME', {{ mysql_databases[0]['name'] }} );
 
 /** Database username */
 /** define( 'DB_USER', 'alb-user' ); */
-define( 'DB_USER', {{ mysql_databases.name }} );
+define( 'DB_USER', {{ mysql_users[0]['name'] }} );
 
 /** Database password */
 /** define( 'DB_PASSWORD', 'alb-user' ); */
-define( 'DB_PASSWORD', {{ mysql_databases.password }} );
+define( 'DB_PASSWORD', {{ mysql_users[0]['password'] }} );
 
 /** Database hostname */
-/** define( 'DB_HOST', '192.168.0.14' ); */
-define( 'DB_HOST', {{ hostvars['ansible-3']['ansible_default_ipv4']['address'] }} );
+define( 'DB_HOST', '192.168.0.14' ); 
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8mb4' );
