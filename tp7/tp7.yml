@@ -6,9 +6,10 @@
     csv_url: "https://raw.githubusercontent.com/MrMegaNova/advanced_ansible_course_nov_2025/main/tp7/temperature.csv"
     csv_local_path: "/root/ansible-formation/tp7/temperature.csv"
     csv_clean_path: "/root/ansible-formation/tp7/temperature_clean.csv"
-    # Coordonnées de Rennes, France
-    latitude: 48.11
-    longitude: -1.68
+    # Coordonnées de Betton 35, France
+    ville: "Betton"
+    latitude: 48.173
+    longitude: -1.629
     api_url: "https://api.open-meteo.com/v1/forecast?latitude={{ latitude }}&longitude={{ longitude }}&hourly=temperature_2m"
     result_file: "/root/ansible-formation/tp7/resultat_comparaison.txt"
 
@@ -83,9 +84,9 @@
           {% for row in csv_data.list %}
           {% set t = row.temperature | float %}
           {% if api_temperature > t %}
-          {% set status = "plus chaud à Rennes" %}
+          {% set status = "plus chaud à " ~ ville %}
           {% elif api_temperature < t %}
-          {% set status = "plus froid à Rennes" %}
+          {% set status = "plus froid à " ~ ville %}
           {% else %}
           {% set status = "même température" %}
           {% endif %}
