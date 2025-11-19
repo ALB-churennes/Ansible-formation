@@ -1,0 +1,99 @@
+---
+- name: TP7
+  hosts: localhost
+
+  vars:
+    csv_url: "https://raw.githubusercontent.com/MrMegaNova/advanced_ansible_course_nov_2025/main/tp7/temperature.csv"
+    csv_local_path: "/root/ansible-formation/tp7/temperature.csv"
+    csv_clean_path: "/root/ansible-formation/tp7/temperature_clean.csv"
+    # Coordonnées de Rennes, France
+    latitude: 48.11
+    longitude: -1.68
+    api_url: "https://api.open-meteo.com/v1/forecast?latitude={{ latitude }}&longitude={{ longitude }}&hourly=temperature_2m"
+    result_file: "/root/ansible-formation/tp7/resultat_comparaison.txt"
+
+  tasks:
+    - name: Télécharger le fichier CSV depuis l'URL
+      ansible.builtin.get_url:
+        url: "{{ csv_url }}"
+        dest: "{{ csv_local_path }}"
+        mode: "0644"
+
+    - name: Lire et parser le CSV
+      community.general.read_csv:
+        path: "{{ csv_local_path }}"
+      register: csv_data
+
+    - name: Nettoyer les données (unique + tri par heure)
+      set_fact:
+        clean_data: >-
+          {{ csv_data.list
+            | unique
+            | sort(attribute='temperature')
+            | sort(attribute='time')
+          }}
+
+    - name: Supprimer le fichier CSV cible s'il existe
+      ansible.builtin.file:
+        path: "{{ csv_clean_path }}"
+        state: absent
+    
+    - name: Écrire l'en-tête CSV
+      ansible.builtin.lineinfile:
+        path: "{{ csv_clean_path }}"
+        line: "time,temperature"
+        create: yes
+        mode: "0644"
+
+    - name: Ajouter les lignes CSV une par une
+      ansible.builtin.lineinfile:
+        path: "{{ csv_clean_path }}"
+        line: "{{ item.time }},{{ item.temperature }}"
+        insertafter: EOF
+      loop: "{{ clean_data }}"
+
+
+    - name: Afficher le chemin du fichier CSV nettoyé
+      debug:
+        msg: "Fichier CSV nettoyé créé : {{ csv_clean_path }}"
+
+    - name: Lire le CSV nettoyé
+      community.general.read_csv:
+        path: "{{ csv_clean_path }}"
+      register: csv_data
+
+    - name: Obtenir l'heure actuelle
+      set_fact:
+        current_hour: "{{ lookup('pipe','date +%H') | int }}"
+
+    - name: Appeler l'API Open-Meteo pour la température actuelle
+      ansible.builtin.uri:
+        url: "{{ api_url }}"
+        return_content: yes
+      register: weather_response
+
+    - name: Extraire la température actuelle depuis l'API
+      set_fact:
+        api_temperature: >-
+          {{ (weather_response.json.hourly.temperature_2m[current_hour]) | float }}
+
+    - name: Construire le texte de comparaison
+      set_fact:
+        comparison_text: |
+          {% for row in csv_data.list %}
+          {% set t = row.temperature | float %}
+          {% if api_temperature > t %}
+          {% set status = "plus chaud à Rennes" %}
+          {% elif api_temperature < t %}
+          {% set status = "plus froid à Rennes" %}
+          {% else %}
+          {% set status = "même température" %}
+          {% endif %}
+          {{ row.time }} : CSV = {{ t }}°C ; local = {{ api_temperature }}°C → {{ status }}
+          {% endfor %}
+
+    - name: Écrire le résultat de la comparaison dans un fichier
+      copy:
+        dest: "{{ result_file }}"
+        content: "{{ comparison_text }}"
+        mode: "0644"
