@@ -1,22 +1,19 @@
 ---
 - name: Installer vim et vérifier /etc/passwd (Ubuntu)
   hosts: all
-  become: yes
+  become: true
 
   tasks:
-
     - name: Mettre à jour la liste des paquets
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
 
     - name: Installer vim sur Ubuntu
-      apt:
+      ansible.builtin.apt:
         name: vim
         state: present
 
     - name: Vérifier que /etc/passwd existe
-      stat:
+      ansible.builtin.stat:
         path: /etc/passwd
       register: passwd_stat
-
-

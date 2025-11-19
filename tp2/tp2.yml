@@ -1,16 +1,15 @@
 ---
 - name: Install et config Apache2
   hosts: all
-  become: yes
+  become: true
 
   tasks:
-
     - name: Mettre à jour la liste des paquets
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
 
     - name: Installer Apache2 et MySQl-Server
-      apt:
+      ansible.builtin.apt:
         name: "{{ item }}"
         state: present
       loop:
@@ -21,8 +20,8 @@
       ansible.builtin.package_facts:
         manager: auto
 
-    - name: Modifier index.html 
-      copy:
+    - name: Modifier index.html
+      ansible.builtin.copy:
         dest: /var/www/html/index.html
         content: |
           <html>
@@ -31,12 +30,12 @@
             <h1>Bonjour depuis Ansible</h1>
           </body>
           </html>
+        mode: "0644"
       when: "'apache2' in ansible_facts.packages"
 
     - name: Verifie Apache2 est demarre et actif au démarrage
-      service:
+      ansible.builtin.service:
         name: apache2
         state: started
-        enabled: yes
+        enabled: true
       when: "'apache2' in ansible_facts.packages"
-

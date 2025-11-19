@@ -1,22 +1,20 @@
 ---
 - name: Install et config Apache2
   hosts: all
-  become: yes
+  become: true
 
   tasks:
-
     - name: Mettre à jour la liste des paquets
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
 
     - name: Installer Apache2
-      apt:
+      ansible.builtin.apt:
         name: apache2
         state: present
 
     - name: Verifie Apache2 est demarre et active au démarrage
-      service:
+      ansible.builtin.service:
         name: apache2
         state: started
-        enabled: yes
-
+        enabled: true

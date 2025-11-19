@@ -3,10 +3,9 @@
   hosts: all
 
   tasks:
-
     - name: Installer Apache2 et MySQl-Server
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         name: "{{ item }}"
         state: present
       loop:
@@ -15,8 +14,8 @@
       when: ansible_hostname in ["ansible-1", "ansible-2"]
 
     - name: Install git - nginx et cosway
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         name: "{{ item }}"
         state: present
       loop:
@@ -26,8 +25,8 @@
       when: ansible_hostname == "ansible-3"
 
     - name: Install ufw sur platform ubuntu
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         name: ufw
         state: present
       when: ansible_facts.distribution == "Ubuntu"
@@ -36,8 +35,8 @@
       ansible.builtin.package_facts:
         manager: auto
 
-    - name: Modifier index.html 
-      copy:
+    - name: Modifier index.html
+      ansible.builtin.copy:
         dest: /var/www/html/index.html
         content: |
           <html>
@@ -46,41 +45,42 @@
             <h1>Bonjour depuis Ansible sur {{ ansible_hostname }} </h1>
           </body>
           </html>
+        mode: "0644"
       when: "'apache2' in ansible_facts.packages or 'nginx' in ansible_facts.packages"
-      
+
     - name: Verifie Apache2 est demarre et actif au démarrage
-      service:
+      ansible.builtin.service:
         name: apache2
         state: started
-        enabled: yes
+        enabled: true
       when: "'apache2' in ansible_facts.packages"
 
     - name: Verifie NGINX est demarre et actif au démarrage
-      service:
+      ansible.builtin.service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
       when: "'nginx' in ansible_facts.packages"
-    
-    - name: recherche de la date
+
+    - name: Recherche de la date
       ansible.builtin.debug:
         var: ansible_date_time
 
-    - name: converison du jour et heure en entier
+    - name: Converison du jour et heure en entier
       ansible.builtin.set_fact:
         jour_pair: "{{ (ansible_date_time.day | int) % 2 == 0 }}"
         apres_midi: "{{ (ansible_date_time.hour | int) >= 12 }}"
 
-    - name: jour pair ou impair avant/apres midi
+    - name: Jour pair ou impair avant/apres midi
       ansible.builtin.template:
         src: jour.j2
         dest: /etc/jour
-        mode: '0644'
+        mode: "0644"
 
-    - name: recup contenu /etc/jour
-      ansible.builtin.command: cat /etc/jour
-      register: contenu_jour
+#    - name: Recup contenu /etc/jour
+#      ansible.builtin.command: cat /etc/jour
+#      register: contenu_jour
 
-    - name: affiche contenu
+    - name: Affiche contenu
       ansible.builtin.debug:
         msg: "Contenu du fichier /etc/jour: {{ contenu_jour.stdout }} - commande lancee le {{ contenu_jour.start }}"

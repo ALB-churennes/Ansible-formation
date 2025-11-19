@@ -1,4 +1,4 @@
-
+---
 - name: Import playbook de TP4
   ansible.builtin.import_playbook: tp4.yml
 
@@ -9,11 +9,14 @@
   hosts: all
 
   tasks:
-   - name: recherche de la date
-     ansible.builtin.debug:
-       var: ansible_date_time
+    - name: Recherche de la date
+      ansible.builtin.debug:
+        var: ansible_date_time
 
-   - name: Ajout de la date dans le fichier /etc/last_changed
-     ansible.builtin.copy:
-       dest: /etc/last_changed
-       content: "ce fichier a ete cree le {{ ansible_date_time.date }} - {{ ansible_date_time.time }} \n"
+    - name: Ajout de la date dans le fichier /etc/last_changed
+      ansible.builtin.lineinfile:
+        path: /etc/last_changed
+        line: "ce fichier a ete modifie le {{ ansible_date_time.date }} - {{ ansible_date_time.time }}"
+        create: true
+        insertafter: EOF
+        mode: "0644"
